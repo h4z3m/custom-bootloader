@@ -46,47 +46,54 @@ typedef enum {
 
 /**
  * @fn void BL_delay(uint32_t)
- * @brief
+ * @brief	Provides a millisecond polling delay
  *
- * @param msec
+ * @param msec	Number of milliseconds to delay
  */
 BL_WEAK void BL_delay(uint32_t msec);
 
 /**
  * @fn BL_Status_t BL_initLED()
- * @brief
+ * @brief	Initializes the hardware indicator LED
  *
- * @return
+ * @return	BL_Status_OK	If initialized successfully
+ * @return	BL_Status_Error	If did not initialize successfully
  */
 BL_WEAK BL_Status_t BL_initLED();
 
 /**
  * @fn BL_Status_t BL_initButton()
- * @brief
+ * @brief	Initializes the hardware button to enter bootloader command mode
  *
- * @return
+ * @return	BL_Status_OK	If initialized successfully
+ * @return	BL_Status_Error	If did not initialize successfully
  */
 BL_WEAK BL_Status_t BL_initButton();
 
 /**
  * @fn BL_Status_t BL_initializeComm()
- * @brief
+ * @brief	Initializes the communication stack that will be used to send/receive data
+ * 	from the host
  *
- * @return
+ * @return	BL_Status_OK	If initialized successfully
+ * @return	BL_Status_Error	If did not initialize successfully
  */
 BL_WEAK BL_Status_t BL_initComm();
 
 /**
  * @fn uint8_t BL_GetButtonState()
- * @brief
+ * @brief	Returns the current button state
  *
- * @return
+ * @return 0	If not pressed
+ * @return Else If pressed
  */
 BL_WEAK uint8_t BL_GetButtonState();
 
 /**
  * @fn uint8_t BL_SetLEDState()
- * @brief
+ * @brief	Sets the LED state.
+ * 	- If state is zero, disable LED
+ * 	- IF state is non-zero, enable LED
  *
  * @return
  */
@@ -94,22 +101,22 @@ BL_WEAK void BL_SetLEDState(uint8_t state);
 
 /**
  * @fn BL_Status_t BL_send(uint8_t*, uint8_t, uint32_t)
- * @brief
+ * @brief	Sends an array of bytes with specified length and returns after a timeout
  *
- * @param data
- * @param len
- * @param timeout
+ * @param data		Data array
+ * @param len		Length of the data in bytes
+ * @param timeout	Timeout in milliseconds
  * @return
  */
 BL_WEAK BL_Status_t BL_send(uint8_t *data, uint32_t len, uint32_t timeout);
 
 /**
  * @fn BL_Status_t BL_receive(uint8_t*, uint8_t, uint32_t)
- * @brief
+ * @brief	Receives an array of bytes with specified length and returns after a timeout
  *
- * @param data
- * @param len
- * @param timeout
+ * @param data		Data array
+ * @param len		Length of the data in bytes
+ * @param timeout	Timeout in milliseconds
  * @return
  */
 BL_WEAK BL_Status_t BL_receive(uint8_t *data, uint32_t len, uint32_t timeout);

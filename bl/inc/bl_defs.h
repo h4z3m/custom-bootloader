@@ -21,7 +21,7 @@
  *							Definitions						        		   *
  *******************************************************************************/
 
-#define BL_SYNC_BYTE_VALUE	(0xA5)
+#define BL_SYNC_BYTE_VALUE (0xA5)
 
 #define BL_FLASH_ERASED_STATE_1 (0xFFFFFFFF)
 #define BL_FLASH_ERASED_STATE_2 (0x00000000)
@@ -55,8 +55,8 @@ typedef enum
 
 typedef struct
 {
-	uint32_t _MSP;				 /**< Main stack pointer */
-	void (*_ResetHandler)(void); /**< Reset handler function pointer*/
+	volatile uint32_t _MSP;				  /**< Main stack pointer */
+	volatile void (*_ResetHandler)(void); /**< Reset handler function pointer*/
 } BL_AppIVT_t;
 
 typedef struct
@@ -67,10 +67,11 @@ typedef struct
 	uint32_t AppLength;
 	uint32_t eraseLength;
 	BL_Mode_t Mode;
-	struct  CommandBuffer {
+	struct CommandBuffer
+	{
 		BL_CommandHeader_t header;
 		uint8_t buff[300];
-	}CommandBuffer;
+	} CommandBuffer;
 } BL_Context_t;
 
 #endif /* BL_DEFS_H_ */

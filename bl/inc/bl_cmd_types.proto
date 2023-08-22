@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package bl_cmd_types;
+
+enum BL_CommandID {
+    BL_GOTO_ADDR_CMD_ID = 0x01;
+    BL_MEM_WRITE_CMD_ID;
+    BL_MEM_READ_CMD_ID;
+    BL_VER_CMD_ID;
+    BL_FLASH_ERASE_CMD_ID;
+    BL_ACK_CMD_ID;
+    BL_ENTER_CMD_MODE_CMD_ID;
+    BL_JUMP_TO_APP_CMD_ID;
+    BL_DATA_PACKET_CMD_ID;
+    BL_RESPONSE_CMD_ID = 0xFF;
+}
+
+message BL_CommandHeader {
+    uint32 payload_size = 1;
+    BL_CommandID cmd_id = 2;
+    uint32 CRC32 = 3;
+}
+
+message BL_ENTER_CMD_MODE_CMD {
+    BL_CommandHeader header = 1;
+    uint32 key = 2;
+}
+
+message BL_GOTO_ADDR_CMD {
+    BL_CommandHeader header = 1;
+    uint32 address = 2;
+}
+
+message BL_MEM_WRITE_CMD {
+    BL_CommandHeader header = 1;
+    uint32 start_address = 2;
+}
+
+message BL_MEM_READ_CMD {
+    BL_CommandHeader header = 1;
+    uint32 start_addr = 2;
+    uint32 length = 3;
+}
+
+message BL_FLASH_ERASE_CMD {
+    BL_CommandHeader header = 1;
+    uint32 page_number = 2;
+    uint32 page_count = 3;
+}
+
+message BL_VER_CMD {
+    BL_CommandHeader header = 1;
+}
+
+message BL_DATA_PACKET_CMD {
+    BL_CommandHeader header = 1;
+    uint32 data_len = 2;
+    uint32 next_len = 3;
+    uint8 end_flag = 4;
+    repeated uint8 data_block = 5;
+}
+
+message BL_JUMP_TO_APP_CMD {
+    BL_CommandHeader header = 1;
+    uint32 key = 2;
+}
+
+message BL_ACK {
+    BL_CommandID cmd_id = 1;
+    uint8 ack = 2;
+    uint8 field = 3;
+}
+
+message BL_Response {
+    BL_CommandHeader header = 1;
+    repeated uint8 data = 2;
+}
+
+message BL_Response_data {
+    repeated uint8 data = 1;
+    uint32 crc = 2;
+}

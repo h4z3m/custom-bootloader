@@ -147,7 +147,7 @@ void bl_handle_mem_write_cmd(BL_MEM_WRITE_CMD *cmd) {
 	BL_DATA_PACKET_CMD data_block = { 0 };
 
 	uint32_t start_address = cmd->data.start_address;
-
+	uint32_t total_bytes = 0;
 	while (data_block.data.end_flag == 0) {
 
 		/* Poll for the packet size */
@@ -175,15 +175,20 @@ void bl_handle_mem_write_cmd(BL_MEM_WRITE_CMD *cmd) {
 			BL_send_ack(BL_ACK_CMD_ID, 0, 0);
 			return;
 		} else {
+			total_bytes += data_block.data.data_len;
+
 			DEBUG_INFO("Received valid data packet, length = %d bytes",
 					data_block.data.data_len);
+
 			/* TODO: write to memory */
 			BL_flash_write(start_address, data_block.data.data_block,
 					data_block.data.data_len);
+
 			start_address += data_block.data.data_len;
 			BL_send_ack(BL_ACK_CMD_ID, 1, 0);
 		}
 	}
+	DEBUG_INFO("Total data received = %lu", total_bytes);
 }
 
 void bl_handle_mem_read_cmd(BL_MEM_READ_CMD *cmd) {
