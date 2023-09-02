@@ -14,25 +14,25 @@
  *******************************************************************************/
 
 #include "../inc/bl.h"
+#include "../BluePill Drivers/CURT_NVIC/CURT_NVIC_headers/NVIC_reg.h"
 #include "../inc/bl_cfg.h"
 #include "../inc/bl_cmd_types.h"
 #include "../inc/bl_defs.h"
 #include "../inc/bl_handlers.h"
-#include "../BluePill Drivers/CURT_NVIC/CURT_NVIC_headers/NVIC_reg.h"
 #include "LIB/DEBUG_UTILS.h"
 
 /*******************************************************************************
  *                        Global Public variables                              *
  *******************************************************************************/
 
-__attribute__((section("BL_CONTEXT")))     BL_Context_t bl_ctx;
+__attribute__((section("BL_CONTEXT")))   BL_Context_t bl_ctx;
 
 /*******************************************************************************
  *                         Private functions prototypes                        *
  *******************************************************************************/
 
 /**
- * @fn BL_AppState_t __validate_app(uint32_t)
+ * @fn BL_AppState_t _validate_app(uint32_t)
  * @brief 	Validates whether a user application is present in flash memory
  * or not.
  *
@@ -40,51 +40,51 @@ __attribute__((section("BL_CONTEXT")))     BL_Context_t bl_ctx;
  * @return	BL_AppState_Valid If the app is valid.
  * @return BL_AppState_Invalid If the app is invalid.
  */
-static BL_AppState_t __validate_app(uint32_t a_appAddr);
+static BL_AppState_t _validate_app(uint32_t *a_appAddr);
 
 /**
- * @fn void __flash_led(uint8_t)
+ * @fn void flash_led(uint8_t)
  * @brief 	Flashes the user led a number of times
  *
  * @param flashes	Number of flashes
  * @param delay_ms	Delay in milliseconds between every LED toggle
  */
-static void __flash_led(uint8_t flashes, uint32_t delay_ms);
+static void flash_led(uint8_t flashes, uint32_t delay_ms);
 
 /**
- * @fn BL_Status_t __init_system(void)
+ * @fn BL_Status_t init_system(void)
  * @brief 	Initializes bootloader specific hardware such as indicator
  * LED's, buttons, UART, etc...
  *
  * @return	BL_Status_t Representing the initialization status
  */
-static BL_Status_t __init_system(void);
+static BL_Status_t init_system(void);
 
 /**
- * @fn void __set_msp(uint32_t)
+ * @fn void set_msp(uint32_t)
  * @brief Sets the main stack pointer to the given one
  *
  * @param a_msp	Main stack pointer value (must be word aligned)
  */
-static inline void __set_msp(uint32_t a_msp);
+static inline void set_msp(uint32_t a_msp);
 
 /**
- * @fn void __init_ctx(void)
- * @brief
+ * @fn void _init_ctx(void)
+ * @brief	Initializes the context structure
  *
  */
-static void __init_ctx(void);
+static void _init_ctx(void);
 
 /**
  * @fn void BL_CommandTimeout(void)
- * @brief
+ * @brief	Handles the command timeout
  *
  */
 static void BL_CommandTimeout(void);
 
 /**
  * @fn void BL_HandleCommand(void*)
- * @brief
+ * @brief	Handles the command received from the host
  *
  * @param buffer
  */
@@ -92,47 +92,48 @@ static void BL_HandleCommand(void *buffer);
 
 /**
  * @fn void BL_SyncHost(uint8_t)
- * @brief
+ * @brief	Synchronizes the host with the bootloader by receiving and sending a sync
+ * 	byte
  *
- * @param byte
+ * @param byte	The byte received
  */
 static void BL_SyncHost(uint8_t byte);
 
 /**
  * @fn void BL_WaitForCommand()
- * @brief
+ * @brief	Waits for a command from the host
  *
  */
-static void BL_WaitForCommand();
+static void BL_WaitForCommand(void);
 
 /**
- * @fn void BL_ValidateApp()
- * @brief
+ * @fn void BL_ValidateApp(void)
+ * @brief	Validates whether a user application is present in flash memory
  *
  */
-static void BL_ValidateApp();
+static void BL_ValidateApp(void);
 
 /**
- * @fn void BL_StateMachine()
- * @brief
+ * @fn void BL_StateMachine(void)
+ * @brief	Handles the state machine
  *
  */
-static void BL_StateMachine();
+static void BL_StateMachine(void);
 
 /*******************************************************************************
  *                         Private functions 								   *
  *******************************************************************************/
 
-static BL_AppState_t __validate_app(uint32_t a_appAddr) {
-	if (a_appAddr == BL_FLASH_ERASED_STATE_1
-			|| a_appAddr == BL_FLASH_ERASED_STATE_2) {
+static BL_AppState_t _validate_app(uint32_t *a_appAddr) {
+	if (*a_appAddr == BL_FLASH_ERASED_STATE_1
+			|| *a_appAddr == BL_FLASH_ERASED_STATE_2) {
 		return BL_AppState_Invalid;
 	} else {
 		return BL_AppState_Valid;
 	}
 }
 
-static void __flash_led(uint8_t flashes, uint32_t delay_ms) {
+static void flash_led(uint8_t flashes, uint32_t delay_ms) {
 	for (uint8_t i = 0; i < flashes; i++) {
 		BL_SetLEDState(1);
 		BL_delay(delay_ms);
@@ -141,7 +142,7 @@ static void __flash_led(uint8_t flashes, uint32_t delay_ms) {
 	}
 }
 
-static void __init_ctx(void) {
+static void _init_ctx(void) {
 	/* Application specific data from linker script */
 	extern uint32_t _AppStartAddr;
 	extern uint32_t _AppEndAddr;
@@ -159,24 +160,24 @@ static void __init_ctx(void) {
 	bl_ctx.Mode = BL_Mode_init;
 }
 
-static BL_Status_t __init_system(void) {
+static BL_Status_t init_system(void) {
 
 	BL_Status_t status = BL_Status_OK;
 	do {
 
 		status = BL_initLED();
 		DEBUG_ASSERT(status == BL_Status_OK);
-		__flash_led(5, 50);
+		flash_led(5, 50);
 
 		status = BL_initButton();
 		DEBUG_ASSERT(status == BL_Status_OK);
-		__flash_led(5, 50);
+		flash_led(5, 50);
 
 		DEBUG_INFO("Initialized GPIO successfully");
 
 		status = BL_initComm();
 		DEBUG_ASSERT(status == BL_Status_OK);
-		__flash_led(5, 50);
+		flash_led(5, 50);
 
 		DEBUG_INFO("Initialized communication stack successfully");
 	} while (0);
@@ -184,8 +185,11 @@ static BL_Status_t __init_system(void) {
 	return status;
 }
 
-static inline void __set_msp(uint32_t a_msp) {
-	__asm volatile("MSR msp, %0" : : "r"(a_msp) :);
+static inline void set_msp(uint32_t a_msp) {
+	__asm volatile("MSR msp, %0"
+			:
+			: "r"(a_msp)
+			:);
 }
 
 static void BL_CommandTimeout(void) {
@@ -252,7 +256,7 @@ static void BL_SyncHost(uint8_t byte) {
 	}
 }
 
-static void BL_WaitForCommand() {
+static void BL_WaitForCommand(void) {
 
 	while (bl_ctx.Mode == BL_Mode_receiveCommand)
 		;
@@ -283,7 +287,7 @@ static void BL_WaitForCommand() {
 	BL_HandleCommand((void*) &bl_ctx.CommandBuffer);
 }
 
-static void BL_ValidateApp() {
+static void BL_ValidateApp(void) {
 
 	/* Cast the application start address to AppIVT struct
 	 * to access the start location and MSP*/
@@ -291,7 +295,7 @@ static void BL_ValidateApp() {
 
 	/* TODO: validate app in a more systematic way, this could lead to bugs */
 	/* Check if there is an application loaded by checking the first address */
-	BL_AppState_t appState = __validate_app(*bl_ctx.AppStartAddress);
+	BL_AppState_t appState = _validate_app(bl_ctx.AppStartAddress);
 
 	switch (appState) {
 	case BL_AppState_Invalid:
@@ -310,7 +314,7 @@ static void BL_ValidateApp() {
 		SCB->VTOR = bl_ctx.AppStartAddress;
 
 		/* Set the main stack pointer to the application's */
-		__set_msp(_appIVT->_MSP);
+		set_msp(_appIVT->_MSP);
 
 		/* Jump to the reset handler of the application */
 		_appIVT->_ResetHandler();
@@ -322,14 +326,13 @@ static void BL_ValidateApp() {
 	}
 }
 
-
-static void BL_StateMachine() {
-	__init_ctx();
+static void BL_StateMachine(void) {
+	_init_ctx();
 	for (;;) {
 		switch (bl_ctx.Mode) {
 		case BL_Mode_init: {
 			/* Initialize system and peripherals */
-			BL_Status_t status = __init_system();
+			BL_Status_t status = init_system();
 
 			DEBUG_ASSERT(status == BL_Status_OK);
 			DEBUG_INFO("System initialization complete");
@@ -383,7 +386,6 @@ static void BL_StateMachine() {
  *******************************************************************************/
 
 void BL_main() {
-
 	BL_StateMachine();
 	while (1)
 		;

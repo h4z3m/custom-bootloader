@@ -16,7 +16,6 @@
  *                              Includes                                       *
  *******************************************************************************/
 
-#include "bl_utils.h"
 #include <stdint.h>
 
 #define BL_PACKED_ALIGNED __attribute__((packed, aligned(1)))
@@ -33,7 +32,7 @@
 typedef enum
 	__attribute__((packed))
 	{
-		BL_GOTO_ADDR_CMD_ID = 0x01,/**< BL_GOTO_ADDR_CMD_ID */
+		BL_GOTO_ADDR_CMD_ID = 0x01, /**< BL_GOTO_ADDR_CMD_ID */
 		BL_MEM_WRITE_CMD_ID, /**< BL_MEM_WRITE_CMD_ID */
 		BL_MEM_READ_CMD_ID, /**< BL_MEM_READ_CMD_ID */
 		BL_VER_CMD_ID, /**< BL_VER_CMD_ID */
@@ -45,11 +44,23 @@ typedef enum
 		BL_RESPONSE_CMD_ID = 0xFF /**< BL_RESPONSE_CMD_ID */
 } BL_CommandID_t;
 
+typedef enum
+	__attribute__((packed))
+	{
+		BL_NACK_SUCCESS = 0,
+	BL_NACK_INVALID_CMD = 1 << 0,
+	BL_NACK_INVALID_KEY = 1 << 1,
+	BL_NACK_INVALID_ADDRESS = 1 << 2,
+	BL_NACK_INVALID_LENGTH = 1 << 3,
+	BL_NACK_INVALID_DATA = 1 << 4,
+	BL_NACK_INVALID_CRC = 1 << 5
+} BL_NACK_t;
+
 /* Received commands */
 
 /**
  * @struct
- * @brief
+ * @brief	Bootloader command header. Must be at the top of any command
  *
  */
 typedef struct BL_PACKED_ALIGNED {
@@ -60,7 +71,7 @@ typedef struct BL_PACKED_ALIGNED {
 
 /**
  * @union
- * @brief
+ * @brief	Union representing the received "ENTER CMD MODE" command.
  *
  */
 typedef union BL_PACKED_ALIGNED {
@@ -138,8 +149,8 @@ typedef union BL_PACKED_ALIGNED {
 } BL_VER_CMD;
 
 /**
- * @union
- * @brief
+ * @union	BL_DATA_PACKET_CMD
+ * @brief	Union representing the received "DATA PACKET" command.
  *
  */
 typedef union BL_PACKED_ALIGNED {
@@ -154,8 +165,8 @@ typedef union BL_PACKED_ALIGNED {
 } BL_DATA_PACKET_CMD;
 
 /**
- * @union
- * @brief
+ * @union	BL_JUMP_TO_APP_CMD
+ * @brief	Union representing the received "JUMP TO APP" command.
  *
  */
 typedef union BL_PACKED_ALIGNED {
@@ -178,7 +189,7 @@ typedef union BL_PACKED_ALIGNED {
 	struct BL_PACKED_ALIGNED {
 		BL_CommandID_t cmd_id; /**< Command ID */
 		uint8_t ack; /**< ACK value */
-		uint8_t field;
+		BL_NACK_t field; /**< NACK field */
 	} data;
 } BL_ACK;
 

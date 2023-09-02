@@ -19,8 +19,28 @@
 /*******************************************************************************
  *                              Definitions                                    *
  *******************************************************************************/
-#define BL_MAX_BUFFER_SIZE_BYTES	(300U)
-#define BL_VS_PAGE_SIZE_BYTES		(1024U)
-#define BL_ENTER_CMD_MODE_KEY		(0x09B21FFC)
-#define BL_JUMP_TO_APP_KEY			(0x4032AFE5)
+
+/**
+ * @brief     Maximum buffer size for bootloader
+ *
+ */
+#define BL_MAX_BUFFER_SIZE_BYTES (300U)
+
+/**
+ * @brief     Maximum page size for bootloader (Vendor specific)
+ *
+ */
+#define BL_VS_PAGE_SIZE_BYTES (1024U)
+
+/**
+ * @brief   Enter command mode key value
+ *
+ */
+#define BL_ENTER_CMD_MODE_KEY (0x09B21FFC)
+/**
+ * @brief   Jump to application key value
+ *
+ */
+#define BL_JUMP_TO_APP_KEY (0x4032AFE5)
+
 #endif /* BL_CFG_H_ */

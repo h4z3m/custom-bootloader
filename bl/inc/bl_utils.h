@@ -30,12 +30,21 @@
 
 #define CRC32_POLY 0xEDB88320
 
+#define VALIDATE_CMD(data, length, crc) \
+	(bl_calculate_command_crc(data, length) == crc)
+
 /*******************************************************************************
  *                            Public functions                                 *
  *******************************************************************************/
 
-uint32_t crc32(const uint8_t *data, uint32_t length);
-
-void erase_flash(uint32_t start_addr, uint32_t length, uint32_t erase_mask);
+/**
+ * @fn uint32_t bl_calculate_command_crc(void*, uint32_t)
+ * @brief	Calculates the CRC for a command
+ *
+ * @param command	Pointer to the command struct
+ * @param size		Size of the command in bytes
+ * @return
+ */
+uint32_t bl_calculate_command_crc(void *command, uint32_t size);
 
 #endif

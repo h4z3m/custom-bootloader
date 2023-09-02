@@ -8,41 +8,35 @@
  * @copyright Copyright (c) 2023
  *
  */
+
 /*******************************************************************************
  *                              Includes     			                       *
  *******************************************************************************/
 
 #include "../inc/bl_utils.h"
-
-/*******************************************************************************
- *                              Definitions                                    *
- *******************************************************************************/
-
-#define CRC32_POLY 0xEDB88320
+#include "../inc/bl_cmd_types.h"
+#include <stddef.h>
+#include <stdint.h>
 
 /*******************************************************************************
  *                         	Public functions			                       *
  *******************************************************************************/
 
-uint32_t crc32(const uint8_t *data, uint32_t length)
-{
+uint32_t bl_calculate_command_crc(void *command, uint32_t size) {
+	const uint8_t *data = (const uint8_t*) command;
 	uint32_t crc = 0xFFFFFFFF;
+	uint32_t crc_offset = offsetof(BL_CommandHeader_t, CRC32);
 
-	for (uint32_t i = 0; i < length; i++)
-	{
-		crc ^= data[i];
+	// Calculate CRC for the command (excluding the CRC field)
+	for (uint32_t i = 0; i < size; i++) {
+		if (i < crc_offset || i >= crc_offset + sizeof(uint32_t)) {
+			crc ^= data[i];
 
-		for (int j = 0; j < 8; j++)
-		{
-			crc = (crc >> 1) ^ ((crc & 1) * CRC32_POLY);
+			for (int j = 0; j < 8; j++) {
+				crc = (crc >> 1) ^ ((crc & 1) * CRC32_POLY);
+			}
 		}
 	}
 
 	return ~crc;
-}
-
-void erase_flash(uint32_t start_addr, uint32_t length, uint32_t erase_mask)
-{
-	while (--length)
-		*((uint32_t *)start_addr++) = erase_mask;
 }

@@ -13,9 +13,9 @@
  *                              Includes                                       *
  *******************************************************************************/
 
-#include <stdint.h>
 #include "../inc/bl_comms.h"
 #include "../inc/bl_defs.h"
+#include <stdint.h>
 
 /*******************************************************************************
  *                          Public functions                                   *
@@ -50,7 +50,6 @@ BL_Status_t BL_send_ack(BL_CommandID_t id, uint8_t ack_value, uint8_t nack_field
 
 BL_Status_t BL_send_response(BL_Response *response)
 {
-	/* Data size + 4(CRC32) + 1 (Command ID) */
 	BL_Status_t status = BL_send(response->serialized_data,
 								 response->data.header.payload_size, BL_SEND_TIMEOUT_MS);
 

@@ -16,33 +16,34 @@
  *                              Includes                                       *
  *******************************************************************************/
 
-#include <stdint.h>
 #include "bl.h"
 #include "bl_cmd_types.h"
+#include <stdint.h>
 
 /*******************************************************************************
  *                         Public functions prototypes                         *
  *******************************************************************************/
 
 /**
- * @brief
+ * @brief   Sends a response
  *
- * @param response
+ * @param response  Response to be sent
  * @return BL_Status_t
  */
 BL_Status_t BL_send_response(BL_Response *response);
 
 /**
- * @brief
+ * @brief   Sends an ack
  *
- * @param id
- * @param ack_value
+ * @param id        Command ID which is acked
+ * @param ack_value Ack value (0 for no ack, 1 for ack)
+ * @param nack_field Nack field (bitwise OR of the NACK fields)
  * @return BL_Status_t
  */
 BL_Status_t BL_send_ack(BL_CommandID_t id, uint8_t ack_value, uint8_t nack_field);
 
 /**
- * @brief
+ * @brief   Receives an ack from the host
  *
  * @return BL_Status_t
  */

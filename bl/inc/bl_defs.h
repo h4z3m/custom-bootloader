@@ -21,21 +21,30 @@
  *							Definitions						        		   *
  *******************************************************************************/
 
+/**
+ * @brief	Synchronization byte
+ *
+ */
 #define BL_SYNC_BYTE_VALUE (0xA5)
 
+/**
+ * @brief	Bootloader flash erased state
+ *
+ */
 #define BL_FLASH_ERASED_STATE_1 (0xFFFFFFFF)
 #define BL_FLASH_ERASED_STATE_2 (0x00000000)
-#define BL_COMMAND_TIMEOUT_MS (1000000U)
-#define BL_RECEIVE_TIMEOUT_MS (1000U)
-#define BL_SEND_TIMEOUT_MS (1000U)
+
+#define BL_COMMAND_TIMEOUT_MS (1000000U) /**	@brief	Bootloader command timeout **/
+#define BL_RECEIVE_TIMEOUT_MS (1000U)	 /**	@brief	Bootloader receive timeout **/
+#define BL_SEND_TIMEOUT_MS (1000U)		 /**	@brief	Bootloader send timeout **/
 
 /*******************************************************************************
  *							Type declarations  				        		   *
  *******************************************************************************/
 
 /**
- * @enum
- * @brief
+ * @enum	BL_AppState_t
+ * @brief	Bootloader application state
  *
  */
 typedef enum
@@ -44,6 +53,10 @@ typedef enum
 	BL_AppState_Invalid /**< BL_AppState_Invalid */
 } BL_AppState_t;
 
+/**
+ * @brief	Bootloader mode
+ *
+ */
 typedef enum
 {
 	BL_Mode_init,
@@ -53,12 +66,20 @@ typedef enum
 	BL_Mode_receiveCommand
 } BL_Mode_t;
 
+/**
+ * @brief	Bootloader interrupt vector table pointer
+ *
+ */
 typedef struct
 {
 	volatile uint32_t _MSP;				  /**< Main stack pointer */
 	volatile void (*_ResetHandler)(void); /**< Reset handler function pointer*/
 } BL_AppIVT_t;
 
+/**
+ * @brief	Bootloader context
+ *
+ */
 typedef struct
 {
 	uint32_t *currentAddress;

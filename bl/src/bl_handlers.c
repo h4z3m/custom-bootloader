@@ -15,9 +15,9 @@
 
 #include "../inc/bl_handlers.h"
 #include "../inc/bl.h"
+#include "../inc/bl_cfg.h"
 #include "../inc/bl_comms.h"
 #include "../inc/bl_defs.h"
-#include "../inc/bl_cfg.h"
 #include "../inc/bl_utils.h"
 #include "LIB/DEBUG_UTILS.h"
 #include <stdint.h>
@@ -42,21 +42,11 @@ extern BL_Context_t bl_ctx;
 
 /**
  * @fn void bl_debug_cmd_name(BL_CommandID_t)
- * @brief
+ * @brief	Prints the command name
  *
- * @param id
+ * @param id	Command ID to be printed
  */
 static void bl_debug_cmd_name(BL_CommandID_t id);
-
-/**
- * @fn uint32_t bl_calculate_command_crc(void*, uint32_t)
- * @brief
- *
- * @param command
- * @param size
- * @return
- */
-static uint32_t bl_calculate_command_crc(void *command, uint32_t size);
 
 /*******************************************************************************
  *                         	Private functions 			                       *
@@ -92,25 +82,6 @@ static void bl_debug_cmd_name(BL_CommandID_t id) {
 		DEBUG_INFO("Unknown command ID 0x%02X", id);
 		break;
 	}
-}
-
-static uint32_t bl_calculate_command_crc(void *command, uint32_t size) {
-	const uint8_t *data = (const uint8_t*) command;
-	uint32_t crc = 0xFFFFFFFF;
-	uint32_t crc_offset = offsetof(BL_CommandHeader_t, CRC32);
-
-	// Calculate CRC for the command (excluding the CRC field)
-	for (uint32_t i = 0; i < size; i++) {
-		if (i < crc_offset || i >= crc_offset + sizeof(uint32_t)) {
-			crc ^= data[i];
-
-			for (int j = 0; j < 8; j++) {
-				crc = (crc >> 1) ^ ((crc & 1) * CRC32_POLY);
-			}
-		}
-	}
-
-	return ~crc;
 }
 
 /*******************************************************************************
@@ -247,7 +218,7 @@ void bl_handle_flash_erase_cmd(BL_FLASH_ERASE_CMD *cmd) {
 	/* Validate between page address & (page_count*page_size + page_address) */
 	/* TODO Protect Bootloader code */
 	if (!VALIDATE_ADDRESS_RANGE(cmd->data.page_number,
-			(cmd->data.page_count) * BL_VS_PAGE_SIZE_BYTES+ cmd->data.page_number,
+			(cmd->data.page_count) * BL_VS_PAGE_SIZE_BYTES + cmd->data.page_number,
 			bl_ctx.AppLength)) {
 		DEBUG_INFO("Invalid address range");
 		BL_send_ack(cmd->data.header.cmd_id, 0, 1 | 2);
@@ -264,9 +235,9 @@ void bl_handle_flash_erase_cmd(BL_FLASH_ERASE_CMD *cmd) {
 	BL_Status_t status = BL_erase_flash(cmd->data.page_number,
 			cmd->data.page_count);
 
+	DEBUG_INFO("Operation status: %d", status);
 	/* Send ACK with operation status */
 	BL_send_ack(cmd->data.header.cmd_id, status == BL_Status_OK, 0);
-
 }
 
 void bl_handle_enter_cmd_mode_cmd(BL_ENTER_CMD_MODE_CMD *cmd) {
@@ -286,7 +257,6 @@ void bl_handle_enter_cmd_mode_cmd(BL_ENTER_CMD_MODE_CMD *cmd) {
 	/* Send ACK back if key matches */
 	BL_send_ack(cmd->data.header.cmd_id, cmd->data.key == BL_ENTER_CMD_MODE_KEY,
 			0);
-
 }
 void bl_handle_jump_to_app_cmd(BL_JUMP_TO_APP_CMD *cmd) {
 	DEBUG_ASSERT(cmd != NULL);
