@@ -9,22 +9,23 @@ This bootloader is a generic bootloader that can be used to flash any MCU. It is
 Specific communication protocol is abstracted from the bootloader. Any appropriate protocol can be used to communicate with the bootloader. The only thing that is required is overloading the weak functions 'BL_send' and 'BL_receive' that are used internally for the command handling. Other vendor specific functions are declared as weak functions to allow this bootloader to be more flexible with multiple MCUs.
 
 Currently, Bootloader supports supports these commands:
-    - BL_MEM_WRITE_CMD
-      - Writes the received data to flash memory
-    - BL_VER_CMD
-      - Sends version information
-    - BL_FLASH_ERASE_CMD
-      - Erases flash memory
-    - BL_ENTER_CMD_MODE_CMD
-      - Prompts the bootloader to enter command mode
-    - BL_JUMP_TO_APP_CMD
-      - Jumps to application
-    - BL_DATA_PACKET_CMD
-      - Data packet command, used to send data during flashing or reading
-    - BL_ACK_CMD
-      - Acknowledge command
-    - BL_RESPONSE_CMD
-      - Response command
+
+- BL_MEM_WRITE_CMD
+  - Writes the received data to flash memory
+- BL_VER_CMD
+  - Sends version information
+- BL_FLASH_ERASE_CMD
+  - Erases flash memory
+- BL_ENTER_CMD_MODE_CMD
+  - Prompts the bootloader to enter command mode
+- BL_JUMP_TO_APP_CMD
+  - Jumps to application
+- BL_DATA_PACKET_CMD
+  - Data packet command, used to send data during flashing or reading
+- BL_ACK_CMD
+  - Acknowledge command
+- BL_RESPONSE_CMD
+  - Response command
 
 ### BL_VER_CMD Procedure
 
