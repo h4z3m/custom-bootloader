@@ -55,6 +55,14 @@ Currently, Bootloader supports supports these commands:
 1. Host sends synchronization byte then BL_ENTER_CMD_MODE_CMD with a special key value.
 2. BL sends BL_ACK_CMD.
    1. If failed, BL sends BL_ACK_CMD with negative ack with the errored field.
+3. If the key matches, the bootloader enters command mode.
+
+### BL_JUMP_TO_APP_CMD Procedure
+
+1. Host BL_JUMP_TO_APP_CMD with a special key value.
+2. BL sends BL_ACK_CMD.
+   1. If failed, BL sends BL_ACK_CMD with negative ack with the errored field.
+3. If the key matches, the bootloader tries to detect if an application is flashed at the specified location. If there is one, it attempts ot jump to it.
 
 ## Error handling
 
