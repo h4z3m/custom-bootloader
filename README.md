@@ -8,7 +8,7 @@ This bootloader is a generic bootloader that can be used to flash any MCU. It is
 
 Specific communication protocol is abstracted from the bootloader. Any appropriate protocol can be used to communicate with the bootloader. The only thing that is required is overloading the weak functions 'BL_send' and 'BL_receive' that are used internally for the command handling. Other vendor specific functions are declared as weak functions to allow this bootloader to be more flexible with multiple MCUs.
 
-Currently, CURT_BL supports supports these commands:
+Currently, Bootloader supports supports these commands:
     - BL_MEM_WRITE_CMD
       - Writes the received data to flash memory
     - BL_VER_CMD
