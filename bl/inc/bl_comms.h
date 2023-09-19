@@ -40,7 +40,26 @@ BL_Status_t BL_send_response(BL_Response *response);
  * @param nack_field Nack field (bitwise OR of the NACK fields)
  * @return BL_Status_t
  */
-BL_Status_t BL_send_ack(BL_CommandID_t id, uint8_t ack_value, uint8_t nack_field);
+BL_Status_t BL_send_ack(BL_CommandID_t id, uint8_t ack_value,
+		uint8_t nack_field);
+
+/**
+ * @fn BL_Status_t BL_receive_ack(void)
+ * @brief 	Attempts to receive an acknowledgment from the host.
+ *
+ * @return BL_Status_OK	If ACK was received and no error fields
+ * @return BL_Status_Error If no ACK was received or there was an error
+ */
+BL_Status_t BL_receive_ack(void);
+
+/**
+ * @fn BL_Status_t BL_send_packet(BL_DATA_PACKET_CMD*)
+ * @brief
+ *
+ * @param packet
+ * @return
+ */
+BL_Status_t BL_send_packet(BL_DATA_PACKET_CMD *packet);
 
 /**
  * @brief   Receives an ack from the host

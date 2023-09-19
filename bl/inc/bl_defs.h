@@ -47,9 +47,8 @@
  * @brief	Bootloader application state
  *
  */
-typedef enum
-{
-	BL_AppState_Valid,	/**< BL_AppState_Valid */
+typedef enum {
+	BL_AppState_Valid, /**< BL_AppState_Valid */
 	BL_AppState_Invalid /**< BL_AppState_Invalid */
 } BL_AppState_t;
 
@@ -57,8 +56,7 @@ typedef enum
  * @brief	Bootloader mode
  *
  */
-typedef enum
-{
+typedef enum {
 	BL_Mode_init,
 	BL_Mode_default,
 	BL_Mode_cmd,
@@ -70,9 +68,8 @@ typedef enum
  * @brief	Bootloader interrupt vector table pointer
  *
  */
-typedef struct
-{
-	volatile uint32_t _MSP;				  /**< Main stack pointer */
+typedef struct {
+	volatile uint32_t _MSP; /**< Main stack pointer */
 	volatile void (*_ResetHandler)(void); /**< Reset handler function pointer*/
 } BL_AppIVT_t;
 
@@ -80,18 +77,18 @@ typedef struct
  * @brief	Bootloader context
  *
  */
-typedef struct
-{
+typedef struct {
 	uint32_t *currentAddress;
 	uint32_t *AppStartAddress;
 	uint32_t *AppEndAddress;
 	uint32_t AppLength;
-	uint32_t eraseLength;
+	uint32_t *BL_startAddress;
+	uint32_t *BL_endAddress;
 	BL_Mode_t Mode;
-	struct CommandBuffer
-	{
+
+	struct CommandBuffer {
 		BL_CommandHeader_t header;
-		uint8_t buff[300];
+		uint8_t buff[1512];
 	} CommandBuffer;
 } BL_Context_t;
 

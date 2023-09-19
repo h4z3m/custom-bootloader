@@ -31,8 +31,8 @@
  *******************************************************************************/
 
 /**
- * @enum
- * @brief
+ * @enum	BL_Status_t
+ * @brief	Bootloader status enum
  *
  */
 typedef enum {
@@ -175,6 +175,7 @@ BL_WEAK BL_Status_t BL_erase_flash(uint32_t page_address, uint32_t page_count);
  */
 BL_WEAK BL_Status_t BL_flash_write(uint32_t start_address, uint8_t data[],
 		uint32_t data_len);
+
 /*******************************************************************************
  *                         Public functions prototypes                    	   *
  *******************************************************************************/

@@ -21,17 +21,15 @@
  *******************************************************************************/
 
 #define VALIDATE_ADDRESS_RANGE(start, end, max_length) \
-    (start < end && (end - start + 1) <= max_length)
-
-#define IS_ENUM_MEMBER(enumType, value) \
-    (((value) >= (enumType##_FIRST)) && ((value) <= (enumType##_LAST)))
-
-#define BL_VALID_COMMAND(cmd) IS_ENUM_MEMBER(BL_CommandID_t, cmd)
-
-#define CRC32_POLY 0xEDB88320
+    (((start) < (end)) && ((end) - (start) + 1) <= (max_length))
 
 #define VALIDATE_CMD(data, length, crc) \
 	(bl_calculate_command_crc(data, length) == crc)
+
+#define BL_VALID_ADDRESS(bl_addr_start,bl_addr_end,address)\
+	(((bl_addr_start) >(address)) || ((bl_addr_end) > (address)))
+
+#define CRC32_POLY 0xEDB88320
 
 /*******************************************************************************
  *                            Public functions                                 *

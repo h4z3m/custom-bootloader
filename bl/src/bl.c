@@ -13,8 +13,8 @@
  *                              Includes                                       *
  *******************************************************************************/
 
-#include "../inc/bl.h"
 #include "../BluePill Drivers/CURT_NVIC/CURT_NVIC_headers/NVIC_reg.h"
+#include "../inc/bl.h"
 #include "../inc/bl_cfg.h"
 #include "../inc/bl_cmd_types.h"
 #include "../inc/bl_defs.h"
@@ -25,7 +25,7 @@
  *                        Global Public variables                              *
  *******************************************************************************/
 
-__attribute__((section("BL_CONTEXT")))   BL_Context_t bl_ctx;
+__attribute__((section("BL_CONTEXT")))            BL_Context_t bl_ctx;
 
 /*******************************************************************************
  *                         Private functions prototypes                        *
@@ -147,17 +147,21 @@ static void _init_ctx(void) {
 	extern uint32_t _AppStartAddr;
 	extern uint32_t _AppEndAddr;
 	extern uint32_t _AppLength;
+	extern uint32_t _BLStartAddr;
+	extern uint32_t _BLEndAddr;
 
 	/* Save addresses & app length to boot-loader context */
 	bl_ctx.AppStartAddress = &_AppStartAddr;
 	bl_ctx.AppEndAddress = &_AppEndAddr;
 	bl_ctx.AppLength = &_AppLength;
 
+	bl_ctx.BL_startAddress = &_BLStartAddr;
+	bl_ctx.BL_endAddress = &_BLEndAddr;
+
 	for (uint32_t i = 0; i < sizeof(bl_ctx.CommandBuffer); i++) {
 		((uint8_t*) &bl_ctx.CommandBuffer)[i] = 0;
 	}
 
-	bl_ctx.Mode = BL_Mode_init;
 }
 
 static BL_Status_t init_system(void) {
@@ -248,9 +252,9 @@ static void BL_SyncHost(uint8_t byte) {
 
 	if (byte == BL_SYNC_BYTE_VALUE) {
 		uint8_t sync_byte = BL_SYNC_BYTE_VALUE;
-		DEBUG_INFO("Synchronized with host");
 		BL_send(&sync_byte, 1, 100);
 		bl_ctx.Mode = BL_Mode_cmd;
+		DEBUG_INFO("Synchronized with host");
 	} else {
 		BL_receiveInterrupt(BL_SyncHost);
 	}
@@ -299,14 +303,13 @@ static void BL_ValidateApp(void) {
 
 	switch (appState) {
 	case BL_AppState_Invalid:
-		DEBUG_WARN("No application found. Entering infinite loop...");
-		while (1)
-			;
+		DEBUG_WARN("No application found. Entering command mode...");
+		bl_ctx.Mode = BL_Mode_cmd;
 		break;
 	case BL_AppState_Valid:
 		DEBUG_INFO("Application found");
-		DEBUG_INFO("Setting MSP to %x", _appIVT->_MSP);
-		DEBUG_INFO("Jumping to application at %x", _appIVT->_ResetHandler);
+		DEBUG_INFO("Setting MSP to 0x%x", _appIVT->_MSP);
+		DEBUG_INFO("Jumping to application at 0x%x", _appIVT->_ResetHandler);
 
 		/* TODO: Make these steps more generic to fit any MCU? */
 
@@ -328,6 +331,9 @@ static void BL_ValidateApp(void) {
 
 static void BL_StateMachine(void) {
 	_init_ctx();
+
+	bl_ctx.Mode = BL_Mode_init;
+
 	for (;;) {
 		switch (bl_ctx.Mode) {
 		case BL_Mode_init: {
@@ -342,6 +348,10 @@ static void BL_StateMachine(void) {
 
 			/* TODO: Check if the button is pressed or if there is a received command
 			 */
+			/* If the button is pressed, try to load applicatoin */
+			if (BL_GetButtonState()) {
+				bl_ctx.Mode = BL_Mode_default;
+			}
 		}
 			break;
 		case BL_Mode_receiveCommand: {

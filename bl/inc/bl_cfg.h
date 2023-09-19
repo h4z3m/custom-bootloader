@@ -13,34 +13,51 @@
 #define BL_CFG_H_
 
 /*******************************************************************************
- *                              Includes                                       *
- *******************************************************************************/
-
-/*******************************************************************************
  *                              Definitions                                    *
  *******************************************************************************/
 
 /**
- * @brief     Maximum buffer size for bootloader
+ * @brief	Maximum buffer size for bootloader
  *
  */
-#define BL_MAX_BUFFER_SIZE_BYTES (300U)
+#define BL_MAX_BUFFER_SIZE_BYTES (1512U)
 
 /**
- * @brief     Maximum page size for bootloader (Vendor specific)
+ * @brief	Enter command mode key value
+ *
+ */
+#define BL_ENTER_CMD_MODE_KEY (0x09B21FFC)
+/**
+ * @brief	Jump to application key value
+ *
+ */
+#define BL_JUMP_TO_APP_KEY (0x4032AFE5)
+
+/**
+ * @def BL_MAX_RETRIES
+ * @brief	Max retries that a host can try or re-send a sub-command data
+ *
+ */
+#define BL_MAX_RETRIES (5)
+
+/**
+ * @brief	Maximum page size for bootloader (Vendor specific)
  *
  */
 #define BL_VS_PAGE_SIZE_BYTES (1024U)
 
 /**
- * @brief   Enter command mode key value
+ * @def BL_VS_FLASH_START_ADDRESS
+ * @brief 	Start address of flash memory (Vendor specific)
  *
  */
-#define BL_ENTER_CMD_MODE_KEY (0x09B21FFC)
+#define BL_VS_FLASH_START_ADDRESS (0x08000000)
+
 /**
- * @brief   Jump to application key value
+ * @def BL_VS_FLASH_END_ADDRESS
+ * @brief 	End address of flash memory (Vendor specific)
  *
  */
-#define BL_JUMP_TO_APP_KEY (0x4032AFE5)
+#define BL_VS_FLASH_END_ADDRESS (0x08007FFF)
 
 #endif /* BL_CFG_H_ */

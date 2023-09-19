@@ -1,8 +1,12 @@
-# CURT Bootloader for STM32F103
+# Bootloader
+
+## Overview
+
+This bootloader is a generic bootloader that can be used to flash any MCU. It is based on commands and responses. All commands are initiated by the host. Acknowledgements are supported to ensure proper communication in addition to CRC32 checks.
 
 ## Communication procedures
 
-Specific communication protocol is abstracted from the bootloader. Any appropriate protocol can be used to communicate with the bootloader. The only thing that is required is overloading the weak functions 'BL_send' and 'BL_receive' that are used internally for the command handling. Other vendor specific functions are declared as weak functions to allow this bootloader to be more flexible.
+Specific communication protocol is abstracted from the bootloader. Any appropriate protocol can be used to communicate with the bootloader. The only thing that is required is overloading the weak functions 'BL_send' and 'BL_receive' that are used internally for the command handling. Other vendor specific functions are declared as weak functions to allow this bootloader to be more flexible with multiple MCUs.
 
 Currently, CURT_BL supports supports these commands:
     - BL_MEM_WRITE_CMD
@@ -43,8 +47,7 @@ Currently, CURT_BL supports supports these commands:
 
 1. Host sends BL_FLASH_ERASE_CMD with the start address and pages to erase starting from thet address.
 2. BL sends BL_ACK_CMD.
-   1. If failed, BL sends BL_ACK_CMD with negative ack with the errored field.
-
+   1. If failed, BL sends BL_ACK_CMD with negative ack with the errored fielid.
 
 ### BL_ENTER_CMD_MODE_CMD Procedure
 
@@ -52,12 +55,25 @@ Currently, CURT_BL supports supports these commands:
 2. BL sends BL_ACK_CMD.
    1. If failed, BL sends BL_ACK_CMD with negative ack with the errored field.
 
+## Error handling
+
+Currently, the bootloader supports the following OR'd error codes:
+
+BL_NACK_SUCCESS:          Success
+BL_NACK_INVALID_CMD:      Invalid command
+BL_NACK_INVALID_KEY:      Invalid key for entering command mode or jumping to application commands
+BL_NACK_INVALID_ADDRESS:  Invalid address (out of range, inside bootloader, etc.)
+BL_NACK_INVALID_LENGTH:   Invalid length
+BL_NACK_INVALID_DATA:     Invalid data
+BL_NACK_INVALID_CRC:      Invalid CRC
+BL_NACK_OPERATION_FAILURE:Operation failed (flashing error, erasing, etc.)
+
 ## TODO
 
 1. Add more commands
-2. Implement a better error handling
+2. Implement better error handling
 3. Test functions
 4. Use protobuffers for communication
-5. Bootloader code protection
+5. ~~Bootloader code protection~~
 6. Optimization for size
-7. Debugging logs
+7. ~~Debugging logs~~
